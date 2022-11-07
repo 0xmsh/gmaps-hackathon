@@ -53,14 +53,14 @@ export default function Map() {
   return (
     <div className="container">
       <div className="controls">
-        <h1>Commute?</h1>
+        <h1>Elevation Maps</h1>
         <Places
           setOffice={(position) => {
             setOffice(position);
             mapRef.current?.panTo(position);
           }}
         />
-        {!office && <p>Enter the address of your office.</p>}
+        {office.lat === 0 && office.lng === 0 && <p>Enter the address of your startpoint.</p>}
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
       <div className="map">
