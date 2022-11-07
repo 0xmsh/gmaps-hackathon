@@ -12,10 +12,11 @@ import {
 import "@reach/combobox/styles.css";
 
 type PlacesProps = {
-  setOffice: (position: google.maps.LatLngLiteral) => void;
+  setStart: (position: google.maps.LatLngLiteral) => void;
+  setEnd: (position: google.maps.LatLngLiteral) => void;
 };
 
-function Start({ setOffice }: PlacesProps) {
+function Start({ setStart }: PlacesProps) {
   const {
     ready,
     value,
@@ -30,7 +31,7 @@ function Start({ setOffice }: PlacesProps) {
 
     const results = await getGeocode({ address: val });
     const { lat, lng } = await getLatLng(results[0]);
-    setOffice({ lat, lng });
+    setStart({ lat, lng });
   };
 
   return (
@@ -54,7 +55,7 @@ function Start({ setOffice }: PlacesProps) {
   );
 }
 
-function End({ setOffice }: PlacesProps) {
+function End({ setEnd }: PlacesProps) {
   const {
     ready,
     value,
@@ -69,7 +70,7 @@ function End({ setOffice }: PlacesProps) {
 
     const results = await getGeocode({ address: val });
     const { lat, lng } = await getLatLng(results[0]);
-    setOffice({ lat, lng });
+    setEnd({ lat, lng });
   };
 
   return (
@@ -93,11 +94,11 @@ function End({ setOffice }: PlacesProps) {
   );
 }
 
-export default function Places({ setOffice }: PlacesProps) {
+export default function Places({ setStart, setEnd }: PlacesProps) {
   return (
-    <div>
-      <Start setOffice={setOffice} />
-      <End setOffice={setOffice} />
-    </div>
+    <>
+      <Start setStart={setStart} />
+      <End setEnd={setEnd} />
+    </>
   );
 }

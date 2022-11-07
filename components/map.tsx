@@ -15,6 +15,8 @@ type MapOptions = google.maps.MapOptions;
 
 export default function Map() {
   const [office, setOffice] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
+  const [start, setStart] = useState<LatLngLiteral>();
+  const [end, setEnd] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
   const mapRef = useRef<GoogleMap>();
   const center = useMemo<LatLngLiteral>(
@@ -30,16 +32,16 @@ export default function Map() {
     []
   );
   const onLoad = useCallback((map) => (mapRef.current = map), []);
-  const houses = useMemo(() => generateHouses(office), [office]);
+  // const houses = useMemo(() => editPoints(office), [office]);
 
-  const fetchDirections = (house: LatLngLiteral) => {
-    if (!office) return;
+  const fetchDirections = () => {
+    if (!start && !end) return;
 
     const service = new google.maps.DirectionsService();
     service.route(
       {
-        origin: house,
-        destination: office,
+        origin: start,
+        destination: end,
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
@@ -55,12 +57,16 @@ export default function Map() {
       <div className="controls">
         <h1>Elevation Maps</h1>
         <Places
-          setOffice={(position) => {
-            setOffice(position);
+          setStart={(position) => {
+            setStart(position);
+            mapRef.current?.panTo(position);
+          }}
+          setEnd={(position) => {
+            setEnd(position);
             mapRef.current?.panTo(position);
           }}
         />
-        {office.lat === 0 && office.lng === 0 && <p>Enter the address of your startpoint.</p>}
+        {!start && <p>Enter the address of your startpoint.</p>}
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
       <div className="map">
@@ -84,12 +90,41 @@ export default function Map() {
             />
           )}
 
-          {office && (
+          {start && (
             <>
               <Marker
-                position={office}
+                position={start}
                 icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
               />
+            </>
+          )}
+          {end && (
+            <>
+              <Marker
+                position={end}
+                icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+              />
+            </>
+          )}
+        </GoogleMap>
+      </div>
+    </div>
+  );
+}
+
+/*
+const editPoints = (position: LatLngLiteral) => {
+  const _houses: Array<LatLngLiteral> = [];
+  for (let i = 0; i < 100; i++) {
+    const direction = Math.random() < 0.5 ? -2 : 2;
+    _houses.push({
+      lat: position.lat + Math.random() / direction,
+      lng: position.lng + Math.random() / direction,
+    });
+  }
+  return _houses;
+};
+
 
               <MarkerClusterer>
                 {(clusterer) =>
@@ -105,31 +140,4 @@ export default function Map() {
                   ))
                 }
               </MarkerClusterer>
-            </>
-          )}
-        </GoogleMap>
-      </div>
-    </div>
-  );
-}
-
-const defaultOptions = {
-  strokeOpacity: 0.5,
-  strokeWeight: 2,
-  clickable: false,
-  draggable: false,
-  editable: false,
-  visible: true,
-};
-
-const generateHouses = (position: LatLngLiteral) => {
-  const _houses: Array<LatLngLiteral> = [];
-  for (let i = 0; i < 100; i++) {
-    const direction = Math.random() < 0.5 ? -2 : 2;
-    _houses.push({
-      lat: position.lat + Math.random() / direction,
-      lng: position.lng + Math.random() / direction,
-    });
-  }
-  return _houses;
-};
+*/
