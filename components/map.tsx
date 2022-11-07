@@ -47,6 +47,7 @@ export default function Map() {
       (result, status) => {
         if (status === "OK" && result) {
           setDirections(result);
+          console.log(result)
         }
       }
     );
@@ -56,6 +57,10 @@ export default function Map() {
     <div className="container">
       <div className="controls">
         <h1>Elevation Maps</h1>
+        <button onClick={fetchDirections}>Get Directions</button>
+        <button>Edit route</button>
+        <button>Get Elevation</button>
+        <button>Show Elevation Profile</button>
         <Places
           setStart={(position) => {
             setStart(position);
@@ -66,6 +71,7 @@ export default function Map() {
             mapRef.current?.panTo(position);
           }}
         />
+        
         {!start && <p>Enter the address of your startpoint.</p>}
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
