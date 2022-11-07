@@ -14,7 +14,6 @@ type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
 
 export default function Map() {
-  const [office, setOffice] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
   const [start, setStart] = useState<LatLngLiteral>();
   const [end, setEnd] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
@@ -31,6 +30,8 @@ export default function Map() {
     }),
     []
   );
+  const [routePoints, setRoutePoints] = useState<LatLngLiteral[]>([]);
+
   const onLoad = useCallback((map) => (mapRef.current = map), []);
   // const houses = useMemo(() => editPoints(office), [office]);
 
@@ -47,18 +48,28 @@ export default function Map() {
       (result, status) => {
         if (status === "OK" && result) {
           setDirections(result);
-          console.log(result)
         }
       }
     );
   };
+
+  const editRoute = () => {
+    if (!directions) return;
+
+    setRoutePoints(
+      directions.routes[0].overview_path.map((p) => ({
+        lat: p.lat(),
+        lng: p.lng(),
+      }))
+    );
+  }
 
   return (
     <div className="container">
       <div className="controls">
         <h1>Elevation Maps</h1>
         <button onClick={fetchDirections}>Get Directions</button>
-        <button>Edit route</button>
+        <button onClick={editRoute}>Edit route</button>
         <button>Get Elevation</button>
         <button>Show Elevation Profile</button>
         <Places
@@ -112,38 +123,22 @@ export default function Map() {
               />
             </>
           )}
+
+          {routePoints && (
+            <MarkerClusterer>
+            {(clusterer) =>
+              routePoints.map((routePoint) => (
+                <Marker
+                  key={routePoint.lat}
+                  position={routePoint}
+                  clusterer={clusterer}
+                />
+              ))
+            }
+          </MarkerClusterer>
+            )}
         </GoogleMap>
       </div>
     </div>
   );
 }
-
-/*
-const editPoints = (position: LatLngLiteral) => {
-  const _houses: Array<LatLngLiteral> = [];
-  for (let i = 0; i < 100; i++) {
-    const direction = Math.random() < 0.5 ? -2 : 2;
-    _houses.push({
-      lat: position.lat + Math.random() / direction,
-      lng: position.lng + Math.random() / direction,
-    });
-  }
-  return _houses;
-};
-
-
-              <MarkerClusterer>
-                {(clusterer) =>
-                  houses.map((house) => (
-                    <Marker
-                      key={house.lat}
-                      position={house}
-                      clusterer={clusterer}
-                      onClick={() => {
-                        fetchDirections(house);
-                      }}
-                    />
-                  ))
-                }
-              </MarkerClusterer>
-*/
