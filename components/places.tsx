@@ -11,12 +11,9 @@ import {
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
 
-type PlacesProps = {
-  setStart: (position: google.maps.LatLngLiteral) => void;
-  setEnd: (position: google.maps.LatLngLiteral) => void;
-};
 
-function Start({ setStart }: PlacesProps) {
+
+function Start({ setStart }: any) {
   const {
     ready,
     value,
@@ -55,7 +52,7 @@ function Start({ setStart }: PlacesProps) {
   );
 }
 
-function End({ setEnd }: PlacesProps) {
+function End({ setEnd }: any) {
   const {
     ready,
     value,
@@ -94,7 +91,7 @@ function End({ setEnd }: PlacesProps) {
   );
 }
 
-export default function Places({ setStart, setEnd }) {
+export default function Places({ setStart, setEnd }: any) {
   return (
     <>
       <Start setStart={setStart} />
