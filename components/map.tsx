@@ -87,13 +87,7 @@ export default function Map() {
                 drawingControl: true,
                 drawingControlOptions: {
                   position: google.maps.ControlPosition.TOP_CENTER,
-                  drawingModes: ["polyline"],
-                  polylineOptions: {
-                    strokeColor: "#ff0000",
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2,
-                  },
-
+                  drawingModes: [google.maps.drawing.OverlayType.POLYLINE],
                 },
               }}/>)}
           {directions && (
