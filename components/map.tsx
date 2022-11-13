@@ -41,8 +41,8 @@ export default function Map() {
     const service = new google.maps.DirectionsService();
     service.route(
       {
-        origin: start,
-        destination: end,
+        origin: start!,
+        destination: end!,
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
