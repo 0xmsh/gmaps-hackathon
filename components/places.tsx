@@ -94,7 +94,7 @@ function End({ setEnd }: PlacesProps) {
   );
 }
 
-export default function Places({ setStart, setEnd }: PlacesProps) {
+export default function Places({ setStart, setEnd }) {
   return (
     <>
       <Start setStart={setStart} />
