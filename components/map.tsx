@@ -129,9 +129,11 @@ export default function Map() {
             {(clusterer) =>
               routePoints.map((routePoint) => (
                 <Marker
-                  key={routePoint.lat}
+                  key={routePoint.lat + routePoint.lng}
                   position={routePoint}
                   clusterer={clusterer}
+                  clickable={true}
+                  draggable={true}
                 />
               ))
             }
