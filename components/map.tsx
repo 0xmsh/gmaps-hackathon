@@ -66,26 +66,6 @@ export default function Map() {
 
   return (
     <div className="container">
-      <div className="controls">
-        <h1>Elevation Maps</h1>
-        <button onClick={fetchDirections}>Get Directions</button>
-        <button onClick={editRoute}>Edit route</button>
-        <button>Get Elevation</button>
-        <button>Show Elevation Profile</button>
-        <Places
-          setStart={(position: any) => {
-            setStart(position);
-            mapRef.current?.panTo(position);
-          }}
-          setEnd={(position: any) => {
-            setEnd(position);
-            mapRef.current?.panTo(position);
-          }}
-        />
-        
-        {!start && <p>Enter the address of your startpoint.</p>}
-        {directions && <Distance leg={directions.routes[0].legs[0]} />}
-      </div>
       <div className="map">
         <GoogleMap
           zoom={10}
@@ -140,6 +120,26 @@ export default function Map() {
           </MarkerClusterer>
             )}
         </GoogleMap>
+      </div>
+      <div className="controls">
+        <h1>Elevation Maps</h1>
+        <button onClick={fetchDirections}>Get Directions</button>
+        <button onClick={editRoute}>Edit route</button>
+        <button>Get Elevation</button>
+        <button>Show Elevation Profile</button>
+        <Places
+          setStart={(position: any) => {
+            setStart(position);
+            mapRef.current?.panTo(position);
+          }}
+          setEnd={(position: any) => {
+            setEnd(position);
+            mapRef.current?.panTo(position);
+          }}
+        />
+        
+        {!start && <p>Enter the address of your startpoint.</p>}
+        {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
     </div>
   );
