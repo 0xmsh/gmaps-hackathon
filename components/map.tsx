@@ -3,7 +3,7 @@ import {
   GoogleMap,
   Marker,
   DirectionsRenderer,
-  Circle,
+  DrawingManager,
   MarkerClusterer,
 } from "@react-google-maps/api";
 import Places from "./places";
@@ -17,9 +17,11 @@ export default function Map() {
   const [start, setStart] = useState<LatLngLiteral>();
   const [end, setEnd] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
+  // show drawing manager
+  const [showDrawingManager, setShowDrawingManager] = useState(false);
   const mapRef = useRef<GoogleMap>();
   const center = useMemo<LatLngLiteral>(
-    () => ({ lat: 43.45, lng: -80.49 }),
+    () => ({ lat: 22, lng: 77 }),
     []
   );
   const options = useMemo<MapOptions>(
@@ -37,6 +39,11 @@ export default function Map() {
 
   const fetchDirections = () => {
     if (!start && !end) return;
+
+    // clear previous directions
+    setDirections(undefined);
+    // clear route points
+    setRoutePoints([]);
 
     const service = new google.maps.DirectionsService();
     service.route(
@@ -74,6 +81,21 @@ export default function Map() {
           options={options}
           onLoad={onLoad}
         >
+          {showDrawingManager && (
+            <DrawingManager
+              options={{
+                drawingControl: true,
+                drawingControlOptions: {
+                  position: google.maps.ControlPosition.TOP_CENTER,
+                  drawingModes: ["polyline"],
+                  polylineOptions: {
+                    strokeColor: "#ff0000",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                  },
+
+                },
+              }}/>)}
           {directions && (
             <DirectionsRenderer
               directions={directions}
@@ -91,7 +113,6 @@ export default function Map() {
             <>
               <Marker
                 position={start}
-                icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
               />
             </>
           )}
@@ -99,7 +120,6 @@ export default function Map() {
             <>
               <Marker
                 position={end}
-                icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
               />
             </>
           )}
@@ -123,8 +143,10 @@ export default function Map() {
       </div>
       <div className="controls">
         <h1>Elevation Maps</h1>
-        <button onClick={fetchDirections}>Get Directions</button>
+        <button className="btn" onClick={fetchDirections}>Get Directions</button>
         <button onClick={editRoute}>Edit route</button>
+        <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear Route</button>      
+        <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
         <button>Get Elevation</button>
         <button>Show Elevation Profile</button>
         <Places
