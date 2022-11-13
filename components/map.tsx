@@ -73,11 +73,11 @@ export default function Map() {
         <button>Get Elevation</button>
         <button>Show Elevation Profile</button>
         <Places
-          setStart={(position) => {
+          setStart={(position: any) => {
             setStart(position);
             mapRef.current?.panTo(position);
           }}
-          setEnd={(position) => {
+          setEnd={(position: any) => {
             setEnd(position);
             mapRef.current?.panTo(position);
           }}
