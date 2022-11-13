@@ -7,7 +7,22 @@ import {
   MarkerClusterer,
 } from "@react-google-maps/api";
 import Places from "./places";
-import Distance from "./distance";
+import Distance from "./distance";    
+import axios from "axios";
+
+import { Client } from '@googlemaps/google-maps-services-js';
+
+const elevation_args = {
+  params: {
+    key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    locations: [
+      { lat: 39.7391536, lng: -104.9847034 },
+      { lat: 36.455556, lng: -116.866667 },
+      { lat: 36.114647, lng: -115.172813 },
+      { lat: 36.175, lng: -115.136389 },
+    ],
+  },
+};
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
@@ -79,6 +94,20 @@ export default function Map() {
     )
   }
 
+  const getElevation = async (latLng: any) => {
+    // call elevation api from next api
+    const { data } = await axios.get('/api/elevation',{
+      params: {
+        locations: [
+        ],
+      }
+    });
+    console.log(data);
+    for (let i = 0; i < data.results.length; i++) {
+      console.log(data.results[i].elevation);
+      console.log(data.results[i].location);
+    }
+  };
 
   // drawing manager polyline options
   const polylineOptions = useMemo(() => ({
@@ -162,7 +191,7 @@ export default function Map() {
         <button onClick={editRoute}>Edit route</button>
         <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear Route</button>      
         <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
-        <button>Get Elevation</button>
+        <button onClick={getElevation}>Get Elevation</button>
         <button>Show Elevation Profile</button>
         <Places
           setStart={(position: any) => {
