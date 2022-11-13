@@ -71,6 +71,26 @@ export default function Map() {
     );
   }
 
+  const onPolylineComplete = (polyline: any) => {
+    console.log(polyline)
+    polyline.getPath().getArray().forEach((latLng: any) => {
+      console.log(latLng.lat(), latLng.lng())
+    }
+    )
+  }
+
+
+  // drawing manager polyline options
+  const polylineOptions = useMemo(() => ({
+    strokeColor: "#000000",
+    strokeOpacity: 1,
+    strokeWeight: 3,
+    editable: true,
+    draggable: true,
+    geodesic: true,
+  }), []);
+
+
   return (
     <div className="container">
       <div className="map">
@@ -83,6 +103,7 @@ export default function Map() {
         >
           {showDrawingManager && (
             <DrawingManager
+              onPolylineComplete={onPolylineComplete}
               options={{
                 drawingControl: true,
                 drawingControlOptions: {
@@ -137,7 +158,7 @@ export default function Map() {
       </div>
       <div className="controls">
         <h1>Elevation Maps</h1>
-        <button className="btn" onClick={fetchDirections}>Get Directions</button>
+        <button className="button" onClick={fetchDirections}>Get Directions</button>
         <button onClick={editRoute}>Edit route</button>
         <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear Route</button>      
         <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
