@@ -11,6 +11,7 @@ import Distance from "./distance";
 import axios from "axios";
 
 import { Client } from '@googlemaps/google-maps-services-js';
+import { json } from "stream/consumers";
 
 const elevation_args = {
   params: {
@@ -90,16 +91,15 @@ export default function Map() {
     console.log(polyline)
     polyline.getPath().getArray().forEach((latLng: any) => {
       console.log(latLng.lat(), latLng.lng())
-    }
+      setRoutePoints((prev) => [...prev, { lat: latLng.lat(), lng: latLng.lng() }])
+      }
     )
   }
 
   const getElevation = async (latLng: any) => {
-    // call elevation api from next api
     const { data } = await axios.get('/api/elevation',{
       params: {
-        locations: [
-        ],
+        locations: JSON.stringify(latLng)
       }
     });
     console.log(data);
@@ -191,8 +191,8 @@ export default function Map() {
         <button onClick={editRoute}>Edit route</button>
         <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear Route</button>      
         <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
-        <button onClick={getElevation}>Get Elevation</button>
-        <button>Show Elevation Profile</button>
+        <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
+        <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
         <Places
           setStart={(position: any) => {
             setStart(position);
