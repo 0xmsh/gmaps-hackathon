@@ -13,6 +13,7 @@ import axios from "axios";
 import { Chart } from "react-google-charts";
 import { Client } from '@googlemaps/google-maps-services-js';
 import { json } from "stream/consumers";
+import { route } from "next/dist/server/router";
 
 const data = [
   ["Index", "Elevation"]
@@ -53,12 +54,22 @@ export default function Map() {
       ]
       
       elevation.forEach((e: any, i: number) => {
-        console.log(typeof e.elevation)
         graph_data.push([i, e.elevation])
       })
       setGraphData(graph_data);
     }
   }, [elevation])
+
+  useEffect(() => {
+    if (!directions) return;
+
+    setRoutePoints(
+      directions.routes[0].overview_path.map((p) => ({
+        lat: p.lat(),
+        lng: p.lng(),
+      }))
+    );
+  }, [directions]);
 
   const options = useMemo<MapOptions>(
     () => ({
@@ -68,10 +79,9 @@ export default function Map() {
     }),
     []
   );
-  const [routePoints, setRoutePoints] = useState<LatLngLiteral[]>([]);
+  const [routePoints, setRoutePoints] = useState<any>();
 
   const onLoad = useCallback((map) => (mapRef.current = map), []);
-  // const houses = useMemo(() => editPoints(office), [office]);
 
   const fetchDirections = () => {
     if (!start && !end) return;
@@ -95,24 +105,12 @@ export default function Map() {
       }
     );
   };
-  
-
-  const viewPoints = () => {
-    if (!directions) return;
-
-    setRoutePoints(
-      directions.routes[0].overview_path.map((p) => ({
-        lat: p.lat(),
-        lng: p.lng(),
-      }))
-    );
-  }
 
   const onPolylineComplete = (polyline: any) => {
-    console.log(polyline)
+    setRoutePoints([])
     polyline.getPath().getArray().forEach((latLng: any) => {
       console.log(latLng.lat(), latLng.lng())
-      setRoutePoints((prev) => [...prev, { lat: latLng.lat(), lng: latLng.lng() }])
+      setRoutePoints((prev: any) => [...prev, { lat: latLng.lat(), lng: latLng.lng() }])
       }
     )
   }
@@ -125,7 +123,36 @@ export default function Map() {
     });
     setElevation(undefined)
     setElevation(data.results)
+    mapRef.current?.panTo(end!);
   };
+
+  const clear = () => {
+    setRoutePoints(undefined);
+    setDirections(undefined);
+    setElevation(undefined);
+    setGraphData(undefined);
+    setGraphLoc(undefined);
+  }
+
+  const downloadCSV = () => {
+    const data = elevation
+
+    const csvRows = [];
+    const top = ["Index", "Lat", "Long", "Elevation"];
+    csvRows.push(top.join(","));
+
+    data.forEach((row: any, i: number) => {
+      const values = [i, row.location.lat, row.location.lng, row.elevation];
+      csvRows.push(values.join(","));
+    });
+    
+    // download the csv file
+    const csvString = csvRows.join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString);
+    a.download = 'elevation.csv';
+    a.click();
+  }
 
   // drawing manager polyline options
   const polylineOptions = useMemo(() => ({
@@ -240,27 +267,32 @@ export default function Map() {
         />
         
         {!start && <p>Enter the address of your startpoint.</p>}
+        <div className="flex">
+          {start && !end && <p>Enter the address of your endpoint.</p>}
+          
+            <button className="button" onClick={fetchDirections}>Get Directions</button>
+            {!showDrawingManager && end && (
+              <button onClick={() => {setShowDrawingManager(true), mapRef.current?.panTo(start!);}}>Draw Route</button>
+            )}
+            {showDrawingManager && end && (
+              <button onClick={() => {setShowDrawingManager(false), mapRef.current?.panTo(end!)}}>Disable Draw</button>
+            )}
+          
+        </div>
+        <div className="flex">
 
-        <div className="flex">
-          <button className="button" onClick={fetchDirections}>Get Directions</button>
-          <button onClick={viewPoints}>View Points</button>
-        </div>
-        <div className="flex">
-          <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
-          <button onClick={() => {setShowDrawingManager(false)}}>Disable Draw</button>
-        </div>
-        <div className="flex">        
-          <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear</button> 
-          <button>Upload CSV</button>
+          <button onClick={() => {clear()}}>Clear</button>
         </div>
         <div>    
+          {routePoints && (
           <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
-          <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
+          )}
+          {elevation && (
+            <div>
+              <button onClick={() => {downloadCSV()}}>Download CSV</button>
+            </div>
+          )}
         </div>
-        <form>
-          <input type={"file"} accept={".csv"} />
-          <button>IMPORT CSV</button>
-        </form>
 
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
