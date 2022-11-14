@@ -5,25 +5,29 @@ import {
   DirectionsRenderer,
   DrawingManager,
   MarkerClusterer,
+  OverlayView
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";    
 import axios from "axios";
-
+import { Chart } from "react-google-charts";
 import { Client } from '@googlemaps/google-maps-services-js';
 import { json } from "stream/consumers";
 
-const elevation_args = {
-  params: {
-    key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    locations: [
-      { lat: 39.7391536, lng: -104.9847034 },
-      { lat: 36.455556, lng: -116.866667 },
-      { lat: 36.114647, lng: -115.172813 },
-      { lat: 36.175, lng: -115.136389 },
-    ],
-  },
-};
+const data = [
+  ['Index', 'Elevation'],
+        ['2013',  1000],
+        ['2014',  1170],
+        ['2015',  660],
+        ['2016',  1030]
+]
+
+const chart_options = {
+  title: 'Elevation Profile',
+  colors: ['#20445e', '#60485e', '#39a89e', '#30489e', '#30788e'],
+  backgroundColor: '#ffffff',
+}
+
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
@@ -184,7 +188,30 @@ export default function Map() {
             }
           </MarkerClusterer>
             )}
+          {start && end && (
+                        <OverlayView
+                        position={end}
+                        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                      >
+                        <div style={{ 
+                          backgroundColor: `red`,
+                          minWidth: `1000px`,
+                          }}>
+                        <Chart
+                          chartType="AreaChart"
+                          data={data}
+                          width="100%"
+                          height="600px"
+                          options={chart_options}
+                          legendToggle
+                        />
+                        </div>
+                      </OverlayView>
+            )
+          }
+
         </GoogleMap>
+
       </div>
       <div className="controls">
         <h1>Elevation Maps</h1>
@@ -204,9 +231,15 @@ export default function Map() {
         <div className="flex">
           <button className="button" onClick={fetchDirections}>Get Directions</button>
           <button onClick={viewPoints}>View Points</button>
-          <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
         </div>
-        <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear</button> 
+        <div className="flex">
+          <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
+          <button onClick={() => {setShowDrawingManager(false)}}>Disable Draw</button>
+        </div>
+        <div className="flex">        
+          <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear</button> 
+          <button>Upload CSV</button>
+        </div>
         <div>    
           <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
           <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
