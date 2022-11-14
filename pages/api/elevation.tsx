@@ -16,6 +16,5 @@ export default async function handler(
             locations: locationsArray
         }
     })
-    console.log(data);
     res.status(200).json(data);
 }

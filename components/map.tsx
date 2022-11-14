@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   GoogleMap,
   Marker,
@@ -15,11 +15,7 @@ import { Client } from '@googlemaps/google-maps-services-js';
 import { json } from "stream/consumers";
 
 const data = [
-  ['Index', 'Elevation'],
-        ['2013',  1000],
-        ['2014',  1170],
-        ['2015',  660],
-        ['2016',  1030]
+  ["Index", "Elevation"]
 ]
 
 const chart_options = {
@@ -37,6 +33,9 @@ export default function Map() {
   const [start, setStart] = useState<LatLngLiteral>();
   const [end, setEnd] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
+  const [elevation, setElevation] = useState<any>();
+  const [graphLoc, setGraphLoc] = useState<any>();
+  const [graphData, setGraphData] = useState<any>();
   // show drawing manager
   const [showDrawingManager, setShowDrawingManager] = useState(false);
   const mapRef = useRef<GoogleMap>();
@@ -44,6 +43,23 @@ export default function Map() {
     () => ({ lat: 22, lng: 77 }),
     []
   );
+
+  useEffect(() => {
+    if (elevation) {
+      console.log(elevation);
+      setGraphLoc(elevation[elevation.length - 1]);
+      const graph_data = [
+        ["Index", "Elevation"],
+      ]
+      
+      elevation.forEach((e: any, i: number) => {
+        console.log(typeof e.elevation)
+        graph_data.push([i, e.elevation])
+      })
+      setGraphData(graph_data);
+    }
+  }, [elevation])
+
   const options = useMemo<MapOptions>(
     () => ({
       mapId: "b181cac70f27f5e6",
@@ -107,11 +123,8 @@ export default function Map() {
         locations: JSON.stringify(latLng)
       }
     });
-    console.log(data);
-    for (let i = 0; i < data.results.length; i++) {
-      console.log(data.results[i].elevation);
-      console.log(data.results[i].location);
-    }
+    setElevation(undefined)
+    setElevation(data.results)
   };
 
   // drawing manager polyline options
@@ -188,7 +201,7 @@ export default function Map() {
             }
           </MarkerClusterer>
             )}
-          {start && end && (
+          {elevation && (
                         <OverlayView
                         position={end}
                         mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
@@ -199,7 +212,7 @@ export default function Map() {
                           }}>
                         <Chart
                           chartType="AreaChart"
-                          data={data}
+                          data={graphData}
                           width="100%"
                           height="600px"
                           options={chart_options}
@@ -244,6 +257,10 @@ export default function Map() {
           <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
           <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
         </div>
+        <form>
+          <input type={"file"} accept={".csv"} />
+          <button>IMPORT CSV</button>
+        </form>
 
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
