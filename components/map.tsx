@@ -25,7 +25,7 @@ const data = [
 const chart_options = {
   title: 'Elevation Profile',
   colors: ['#20445e', '#60485e', '#39a89e', '#30489e', '#30788e'],
-  backgroundColor: '#ffffff',
+  backgroundColor: '#dbd4bf',
 }
 
 

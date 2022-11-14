@@ -23,8 +23,8 @@ a {
 .controls {
   width: 20%;
   padding: 1rem;
-  background: #14161a;
-  color: #fff;
+  background: #ede7d8;
+  color: #000;
 }
 
 .controls input {
@@ -55,9 +55,10 @@ a {
 }
 
 button {
-  background: #1f2635;
-  color: #fff;
+  background: #dbd4bf;
+  color: #000;
   border: none;
   padding: 0.5rem;
   margin: 0.5rem;
+  border-radius: 0.25rem;
 }
