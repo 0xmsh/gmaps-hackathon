@@ -21,7 +21,7 @@ a {
 }
 
 .controls {
-  width: 20%;
+  width: 23%;
   padding: 1rem;
   background: #14161a;
   color: #fff;
@@ -49,6 +49,9 @@ a {
 .combobox-input {
   width: 100%;
   padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 button {

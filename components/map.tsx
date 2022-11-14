@@ -75,8 +75,9 @@ export default function Map() {
       }
     );
   };
+  
 
-  const editRoute = () => {
+  const viewPoints = () => {
     if (!directions) return;
 
     setRoutePoints(
@@ -187,12 +188,6 @@ export default function Map() {
       </div>
       <div className="controls">
         <h1>Elevation Maps</h1>
-        <button className="button" onClick={fetchDirections}>Get Directions</button>
-        <button onClick={editRoute}>Edit route</button>
-        <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear Route</button>      
-        <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
-        <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
-        <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
         <Places
           setStart={(position: any) => {
             setStart(position);
@@ -205,6 +200,18 @@ export default function Map() {
         />
         
         {!start && <p>Enter the address of your startpoint.</p>}
+
+        <div className="flex">
+          <button className="button" onClick={fetchDirections}>Get Directions</button>
+          <button onClick={viewPoints}>View Points</button>
+          <button onClick={() => {setShowDrawingManager(true)}}>Draw Route</button>
+        </div>
+        <button onClick={() => {setRoutePoints([]); setDirections(undefined)}}>Clear</button> 
+        <div>    
+          <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
+          <button onClick={() => {console.log(routePoints)}}>Show Elevation Profile</button>
+        </div>
+
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
     </div>
