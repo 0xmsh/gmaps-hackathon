@@ -268,20 +268,22 @@ export default function Map() {
         {!start && <p>Enter the address of your startpoint.</p>}
         <div className="flex">
           {start && !end && <p>Enter the address of your endpoint.</p>}
-          
-            <button className="button" onClick={fetchDirections}>Get Directions</button>
-            {!showDrawingManager && end && (
+            {start && end && (
+              <button className="button" onClick={fetchDirections}>Get Directions</button>
+            )}
+            {!showDrawingManager && start && end && (
               <button onClick={() => {setShowDrawingManager(true), mapRef.current?.panTo(start!);}}>Draw Route</button>
             )}
-            {showDrawingManager && end && (
+            {showDrawingManager && start && end && (
               <button onClick={() => {setShowDrawingManager(false), mapRef.current?.panTo(end!)}}>Disable Draw</button>
             )}
           
         </div>
-        <div className="flex">
-
-          <button onClick={() => {clear()}}>Clear</button>
-        </div>
+        {routePoints && (
+          <div className="flex">
+            <button onClick={() => {clear()}}>Clear</button>
+          </div>
+        )}
         <div>    
           {routePoints && (
             <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
