@@ -8,7 +8,6 @@ import {
   OverlayView
 } from "@react-google-maps/api";
 import Places from "./places";
-import Distance from "./distance";    
 import axios from "axios";
 import { Chart } from "react-google-charts";
 import { Client } from '@googlemaps/google-maps-services-js';
@@ -145,7 +144,7 @@ export default function Map() {
       const values = [i, row.location.lat, row.location.lng, row.elevation];
       csvRows.push(values.join(","));
     });
-    
+
     // download the csv file
     const csvString = csvRows.join('\n');
     const a = document.createElement('a');
@@ -216,7 +215,7 @@ export default function Map() {
           {routePoints && (
             <MarkerClusterer>
             {(clusterer) =>
-              routePoints.map((routePoint) => (
+              routePoints.map((routePoint: any) => (
                 <Marker
                   key={routePoint.lat + routePoint.lng}
                   position={routePoint}
@@ -285,16 +284,12 @@ export default function Map() {
         </div>
         <div>    
           {routePoints && (
-          <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
+            <button onClick={() => {getElevation(routePoints)}}>Get Elevation</button>
           )}
           {elevation && (
-            <div>
               <button onClick={() => {downloadCSV()}}>Download CSV</button>
-            </div>
           )}
         </div>
-
-        {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
     </div>
   );
